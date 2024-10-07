@@ -1,0 +1,89 @@
+<mat-nav-list>
+  <div class="logo py-4">
+    <img src="../../../../assets/images/4990794.png" alt="">
+  </div>
+  <mat-divider></mat-divider>
+  <h2 matSubheader class="mt-2">ADMIN PANEL</h2>
+  <a mat-list-item [routerLink]="['home']" routerLinkActive="list-item-active">
+    <mat-icon fontIcon="home"></mat-icon>
+    <span>HOME</span>
+  </a>
+  <a mat-list-item [routerLink]="['profile']" routerLinkActive="list-item-active">
+    <mat-icon fontIcon="account_circle"></mat-icon>
+    <span>Profile</span>
+  </a>
+  <a mat-list-item [routerLink]="['category']" routerLinkActive="list-item-active">
+    <mat-icon fontIcon="view_cozy"></mat-icon>
+    <span>Danh mục</span>
+  </a>
+  <a mat-list-item [routerLink]="['flavor']" routerLinkActive="list-item-active">
+    <mat-icon fontIcon="edit"></mat-icon>
+    <span>Hương vị</span>
+  </a>
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      Quản lý
+    </mat-expansion-panel-header>
+    <mat-nav-list>
+      <ng-container *ngIf="!isEmployee">
+        <a mat-list-item [routerLink]="['employee']" routerLinkActive="list-item-active">
+          <mat-icon fontIcon="edit"></mat-icon>
+          <span>Nhân viên</span>
+        </a>
+      </ng-container>
+      <a mat-list-item [routerLink]="['user']" routerLinkActive="list-item-active">
+        <mat-icon fontIcon="supervised_user_circle"></mat-icon>
+        <span>Người dùng</span>
+      </a>
+    </mat-nav-list>
+  </mat-expansion-panel>
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      Sản phẩm
+    </mat-expansion-panel-header>
+    <mat-nav-list>
+      <a mat-list-item [routerLink]="['product']" routerLinkActive="list-item-active">
+        <mat-icon fontIcon="dashboard"></mat-icon>
+        <span>Sản phẩm</span>
+      </a>
+      <a mat-list-item [routerLink]="['product-image']" routerLinkActive="list-item-active">
+        <mat-icon fontIcon="image"></mat-icon>
+        <span>Hình ảnh sản phẩm</span>
+      </a>
+      <a mat-list-item [routerLink]="['product-detail']" routerLinkActive="list-item-active">
+        <mat-icon fontIcon="details"></mat-icon>
+        <span>Chi tiết sản phẩm</span>
+      </a>
+      <a mat-list-item [routerLink]="['vendor']" routerLinkActive="list-item-active">
+        <mat-icon fontIcon="storefront"></mat-icon>
+        <span>Nhà cung cấp</span>
+      </a>
+      <a mat-list-item [routerLink]="['product-origin']" routerLinkActive="list-item-active">
+        <mat-icon fontIcon="connecting_airports"></mat-icon>
+        <span>Xuất xứ</span>
+      </a>
+    </mat-nav-list>
+  </mat-expansion-panel>
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>Hoạt động</mat-expansion-panel-header>
+    <mat-nav-list>
+      <a mat-list-item [routerLink]="['sale']" routerLinkActive="list-item-active">
+        <mat-icon fontIcon="event_list"></mat-icon>
+        <span>Sự kiện</span>
+      </a>
+      <a mat-list-item [routerLink]="['voucher']" routerLinkActive="list-item-active">
+        <mat-icon fontIcon="sell"></mat-icon>
+        <span>Voucher</span>
+      </a>
+    </mat-nav-list>
+  </mat-expansion-panel>
+  <a mat-list-item [routerLink]="['brand']" routerLinkActive="list-item-active">
+    <mat-icon fontIcon="branding_watermark"></mat-icon>
+    <span>Thương hiệu</span>
+  </a>
+  <a mat-list-item [routerLink]="['order']" routerLinkActive="list-item-active">
+    <mat-icon fontIcon="receipt_long"></mat-icon>
+    <span>Đơn hàng</span>
+  </a>
+
+</mat-nav-list>

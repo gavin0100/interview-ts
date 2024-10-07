@@ -1,0 +1,339 @@
+<section class="bread-crumb">
+  <div class="container">
+    <div class="bread-crumb-title text-center">
+      THANH TOÁN ĐƠN HÀNG
+    </div>
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb justify-content-center">
+        <li class="breadcrumb-item"><a [routerLink]="'/home'">Trang chủ</a></li>
+        <li class="breadcrumb-item active" aria-current="page"><strong>
+          Thanh toán đơn hàng
+        </strong> </li>
+      </ol>
+    </nav>
+  </div>
+</section>
+<section *ngIf="!isLoading; else loading">
+  <ng-container *ngIf="cartItems.length > 0 && cartItems; else noCheckout">
+    <div class="container">
+      <div class="row">
+        <div class="col-xl-8">
+          <div class="card">
+            <div class="card-header" style="background-color: transparent;">
+              <h3 class="mb-0"><strong>THANH TOÁN ĐƠN HÀNG</strong></h3>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-12">
+                  <mat-stepper [linear]="true" [@.disabled]="true">
+                    <mat-step [stepControl]="infoForm">
+                      <form [formGroup]="infoForm">
+                        <ng-template matStepLabel>Thông tin mua hàng</ng-template>
+                        <div class="form my-3">
+                          <div class="col-lg-12 mb-3">
+                            <mat-form-field>
+                              <mat-label>Họ và tên</mat-label>
+                              <input matInput placeholder="Họ và tên" formControlName="fullName">
+                            </mat-form-field>
+                          </div>
+                          <div class="col-lg-12 mb-3">
+                            <mat-form-field>
+                              <mat-label>Email (tùy chọn)</mat-label>
+                              <input matInput placeholder="Email" formControlName="email">
+                            </mat-form-field>
+                          </div>
+                          <div class="col-lg-12 mb-3">
+                            <mat-form-field>
+                              <mat-label>Số điện thoại</mat-label>
+                              <input matInput placeholder="Số điện thoại" formControlName="phone">
+                            </mat-form-field>
+                          </div>
+                          <div class="col-lg-12 mb-3">
+                            <mat-form-field>
+                              <mat-label>Địa chỉ giao hàng</mat-label>
+                              <input matInput placeholder="Địa chỉ giao hàng" formControlName="address">
+                            </mat-form-field>
+                          </div>
+                          <div class="row mb-3">
+                            <div class="col-md-4">
+                              <mat-form-field appearance="fill">
+                                <mat-label>Thành phố/Tỉnh</mat-label>
+                                <mat-select (selectionChange)="onPChange($event.value)" formControlName="province">
+                                  <mat-option>Chọn thành phố/Tỉnh</mat-option>
+                                  <mat-option *ngFor="let p of _provinces" [value]="p" >{{p.ProvinceName}}</mat-option  >
+                                </mat-select>
+                              </mat-form-field>
+                            </div>
+                            <div class="col-md-4">
+                              <mat-form-field>
+                                <mat-label >Quận/Huyện</mat-label>
+                                <mat-select (selectionChange)="onDChange($event.value)" formControlName="district">
+                                  <mat-option>Chọn Quận/Huyện</mat-option>
+                                  <mat-option *ngFor="let d of _districts" [value]="d">{{d.DistrictName}}</mat-option>
+                                </mat-select>
+                              </mat-form-field>
+                            </div>
+                            <div class="col-md-4">
+                              <mat-form-field>
+                                <mat-label>Xã/Phường</mat-label>
+                                <mat-select (selectionChange)="onWChange($event.value)" formControlName="ward">
+                                  <mat-option>Chọn Xã/Phường</mat-option>
+                                  <mat-option *ngFor="let w of _wards" [value]="w">{{w.WardName}}</mat-option>
+                                </mat-select>
+                              </mat-form-field>
+                            </div>
+                          </div>
+                          <div class="col-lg-12 mb-3">
+                            <mat-form-field>
+                              <mat-label>Ghi chú</mat-label>
+                              <textarea matInput placeholder="Ghi chú" formControlName="notes"></textarea>
+                            </mat-form-field>
+                          </div>
+                          <div class="float-end">
+                            <button mat-raised-button color="primary" [disabled]="infoForm.invalid" matStepperNext>Tiếp theo</button>
+                          </div>
+                        </div>
+                      </form>
+
+                    </mat-step>
+                    <mat-step [stepControl]="moneyForm" state="delivery">
+                      <form [formGroup]="moneyForm">
+                        <ng-template matStepLabel>Phương thức vận chuyển và thanh toán</ng-template>
+                        <div class="form my-3">
+                          <div class="row">
+                            <div class="col-12">
+                              <h3>Phương thức vận chuyển</h3>
+                              <p>Phí vận chuyển: <b>{{this.shippingFee??0 | currencyVND}}</b></p>
+                            </div>
+                            <div class="row">
+                              <div class="col-12">
+                                <mat-radio-group (change)="onServiceChange($event)"  class="radio-group" aria-label="Select an option">
+                                  <ul class="list-group list-group-flush align-items-center">
+                                    <div class="">
+                                      <li class="list-group-item d-flex" *ngFor="let s of deliveryServices; let i = index">
+                                        <mat-radio-button class="pe-3" [value]="s"> {{s.short_name}}</mat-radio-button>
+                                      </li>
+                                    </div>
+
+                                  </ul>
+                                </mat-radio-group>
+                              </div>
+                              <div class="col-12"></div>
+                            </div>
+                          </div>
+                          <div class="row mt-3">
+                            <div class="col-12">
+                              <h3>Phương thức thanh toán</h3>
+                            </div>
+                            <div class="row">
+                              <div class="col-12">
+                                <mat-radio-group (change)="onPaymentChange($event)" formControlName="paymentMethod"  aria-label="Select an option">
+                                    <ul class="list-group list-group-flush align-items-start">
+                                      <div >
+                                        <li class="list-group-item d-flex">
+                                          <mat-radio-button class="radio-button" value="COD">Thanh toán khi nhận hàng (COD)</mat-radio-button>
+                                          <img class="ms-auto" src="assets/images/cash.png" height="40px" width="40px" alt="">
+                                        </li>
+                                        <li class="list-group-item d-flex">
+                                          <mat-radio-button class="radio-button" value="MOMO">Thanh toán qua ví điện tử Momo</mat-radio-button>
+                                          <img class="ms-auto" src="assets/images/momo.png" height="40px" width="40px" alt="">
+                                        </li>
+                                        <li class="list-group-item d-flex">
+                                          <mat-radio-button class="radio-button" value="VNPAY">Thanh toán qua cổng điện tử VNPAY</mat-radio-button>
+                                          <img class="ms-auto" src="assets/images/vnpay.png" height="40px" width="40px" alt="">
+                                        </li>
+                                      </div>
+                                    </ul>
+                                </mat-radio-group>
+
+                              </div>
+                              <div class="col-12"></div>
+                            </div>
+                          </div>
+                          <div class="float-end">
+                            <button class="me-3" mat-raised-button matStepperPrevious color="warn">Quay lại</button>
+                            <button mat-raised-button matStepperNext [disabled]="moneyForm.invalid">Tiếp tục</button>
+                          </div>
+                        </div>
+                      </form>
+                    </mat-step>
+                    <mat-step label="Xác nhận thông tin" state="done">
+                      <h3 class="text-center">Kiểm tra thông tin của bạn.</h3>
+                      <mat-list>
+                        <mat-list-item>
+                          <strong>Họ và tên:</strong>
+                          {{ this.infoForm.value.fullName }}</mat-list-item
+                        >
+
+                        <mat-list-item>
+                          <strong>Email:</strong>
+                          {{ this.infoForm.value.email == '' ? 'Không có' : this.infoForm.value.email }}</mat-list-item
+                        >
+
+                        <mat-list-item>
+                          <strong>Số điện thoại:</strong>
+                          {{ this.infoForm.value.phone }}</mat-list-item
+                        >
+
+                        <mat-list-item class="mat-list-item-word-wrap">
+                          <strong>Địa chỉ giao hàng:</strong>
+                          <span matLine *ngIf="infoForm.value.province && infoForm.value.district && infoForm.value.ward"> {{ this.infoForm.value.address + ', '+ this.infoForm.value.ward.WardName + ', '+ this.infoForm.value.district.DistrictName + ', ' + this.infoForm.value.province.ProvinceName  }}</span>
+                        </mat-list-item
+                        >
+                        <mat-list-item>
+                          <strong>Ghi chú:</strong>
+                          {{ this.infoForm.value.notes == '' ? 'Không có' : this.infoForm.value.notes }}</mat-list-item
+                        >
+
+                        <mat-list-item>
+                          <strong>Phuơng thức vận chuyển:</strong>
+                          {{ this.selectedService?.short_name }}</mat-list-item
+                        >
+
+                        <mat-list-item>
+                          <strong>Phương thức thanh toán:</strong>
+                          {{ this.selectedPaymentMethod}}</mat-list-item
+                        >
+                      </mat-list>
+
+                      <div class="float-end">
+                        <button class="me-3" color="warn" mat-raised-button matStepperPrevious>Quay lại</button>
+                        <button mat-raised-button color="primary" (click)="onSubmit()">Thanh toán</button>
+                      </div>
+                    </mat-step>
+                    <ng-template matStepperIcon="delivery">
+                      <mat-icon>local_shipping</mat-icon>
+                    </ng-template>
+                    <ng-template matStepperIcon="done">
+                      <mat-icon>done</mat-icon>
+                    </ng-template>
+                  </mat-stepper>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-4">
+          <form [formGroup]="voucherForm" (ngSubmit)="applyVoucher()" class="card mb-3">
+            <div class="card-body">
+              <p>Mã giảm giá</p>
+              <div *ngIf="voucher!== null; else inputVoucher" class="input-group my-2">
+                <input  type="text" [value]="voucher.code" class="form-control" [disabled]="true">
+                <button class="btn btn-primary" (click)="openChangeVoucher(voucher)" type="button">
+                  <span> <mat-icon fontIcon="change_circle" style="vertical-align: middle"></mat-icon></span>
+                </button>
+              </div>
+              <ng-template #inputVoucher>
+                <div class="input-group my-2">
+                  <input  type="text" class="form-control" placeholder="Nhập mã giảm giá" formControlName="code">
+                  <button class="btn btn-primary" type="submit">Áp dụng</button>
+                </div>
+              </ng-template>
+            </div>
+          </form>
+          <div class="card mb-3">
+            <div class="card-body py-2">
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item px-0">
+                  <h3><strong>Tổng quan đơn hàng</strong></h3>
+                </li>
+                <li class="list-group-item px-0">
+                  <div class="d-flex align-items-start" *ngFor="let ci of cartItems">
+                    <img [src]="ci.productImage.url" [alt]="ci.productName" class="bg-light rounded img-fluid wid-60">
+                    <div class="flex-grow-1 mx-2">
+                      <h4 class="mb-1 text-truncate" style="max-width: 200px;">{{ci.productName}}</h4>
+                      <p class="text-truncate text-muted text-sm mb-2">{{ci.productDetail.weight | convertUnit: ci.productDetail.categoryId}}</p>
+                      <h5 class="mb-1">
+                        <span class="mx-2 f-14 text-muted f-w-400">{{ci.quantity}} sản phẩm</span>
+                      </h5>
+                    </div>
+                    <div class="d-flex flex-column">
+                      <h3 class="mb-0"><strong>{{(ci.total | currencyVND)}}</strong></h3>
+                      <p *ngIf="voucher!==null && voucher.category?.id === ci.productDetail.categoryId" class="text-muted"><s>{{ci.total / (1 -  voucher.discount/100) | currencyVND }}</s></p>
+                      <p *ngIf="voucher!==null && voucher.category===null" class="text-muted"><s>{{ci.total / (1 -  voucher.discount/100) | currencyVND }}</s></p>
+                    </div>
+                  </div>
+                </li>
+                <li class="list-group-item px-0">
+                  <div class="float-end">
+                    <h4 class="mb-0">{{cart.total - discountFee +(discountFee / (1-voucher?.discount/100)) | currencyVND}}</h4>
+                  </div>
+                  <span class="text-muted">Tạm tính</span>
+                </li>
+                <li class="list-group-item px-0">
+                  <div class="float-end">
+                    <h4 class="mb-0">{{this.shippingFee  === null ? '-' : this.shippingFee  | currencyVND}}</h4>
+                  </div>
+                  <span class="text-muted">Chi phí vận chuyển</span>
+                </li>
+                <li class="list-group-item px-0">
+                  <div class="float-end">
+                    <h4 *ngIf="voucher!==null;else noDiscount" class="mb-0">{{discountFee / (1-voucher.discount /100) - discountFee | currencyVND}}</h4>
+                    <ng-template #noDiscount>
+                      <h4 class="mb-0">---</h4>
+                    </ng-template>
+                  </div>
+                  <span class="text-muted">Giảm giá {{voucher!==null ? '('+ voucher.discount + '%)' : '(%)'}}</span>
+                </li>
+                <li class="list-group-item px-0">
+                  <div class="float-end">
+                    <h4 *ngIf="voucher!==null;else noVoucher"  class="mb-0">{{voucher.code}}</h4>
+                    <ng-template #noVoucher>
+                      <h4 class="mb-0">---</h4>
+                    </ng-template>
+                  </div>
+                  <span class="text-muted">Voucher</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-body py-2">
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item px-0">
+                  <div class="float-end">
+                    <h3 class="mb-0"><strong>{{(cart.total + this.shippingFee ?? 0) | currencyVND}}</strong></h3>
+                  </div>
+                  <h3 class="mb-0 d-inline-block">Tổng cộng</h3>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</section>
+<ng-template #loading>
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <div class="card mb-3">
+          <div class="card-body">
+            <div class="text-center">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+<ng-template #noCheckout>
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <div class="card mb-3">
+          <div class="card-body">
+            <h3 class="text-center">Giỏ hàng của bạn đang trống</h3>
+            <div class="text-center">
+              <a [routerLink]="'/home'" class="btn btn-primary">Tiếp tục mua hàng</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>

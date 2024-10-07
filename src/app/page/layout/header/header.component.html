@@ -1,0 +1,310 @@
+<!--<p>header works!</p>-->
+
+<header class="section-header mt-3">
+  <section class="header-main">
+    <div class="container">
+      <div class="row gy-3 align-items-center align-content-center">
+        <div class="col-lg-2 col-sm-4 col-4">
+          <a routerLink="/home" class="navbar-brand fs-1 mx-auto">
+            FILTRO
+          </a> <!-- brand end.// -->
+        </div>
+        <div class="order-lg-last col-lg-6 col-sm-8 col-8 d-flex">
+          <div class="d-none d-lg-block col d-flex justify-content-start align-items-center">
+            <div class="col d-flex align-items-center">
+              <mat-icon>local_shipping</mat-icon>
+              <div class="col d-flex flex-column ms-3">
+                <span class="text-danger">Giao hàng tận nhà</span>
+                <span>Giá cả phải chăng</span>
+              </div>
+            </div>
+          </div>
+          <div class="d-none d-lg-block col d-flex justify-content-start align-items-center">
+            <div class="col d-flex align-items-center">
+              <mat-icon>system_update_alt</mat-icon>
+              <div class="col d-flex flex-column ms-3">
+                <span class="text-danger">Cập nhật liên tục</span>
+                <span>Dễ dàng thực hiện</span>
+              </div>
+            </div>
+          </div>
+          <div class="col d-flex justify-content-end align-items-center">
+            <ng-container *ngIf="username;else login">
+              <button mat-button [matMenuTriggerFor]="menu" class="admin                                                                                                                                                                                                                                                                                                                                                   d-flex align-items-center">
+                <span> {{username}} </span>
+                <mat-icon class="admin-image-icon ml-1" fontIcon="keyboard_arrow_down"></mat-icon>
+              </button>
+              <mat-menu #menu="matMenu">
+                <button (click)="toggleUser()" mat-menu-item>
+                  <mat-icon fontIcon="account_circle"></mat-icon> Thông tin tài khoản
+                </button>
+                <button (click)="toggleOrders()" mat-menu-item>
+                  <mat-icon fontIcon="inventory_2"></mat-icon> Thông tin đơn hàng
+                </button>
+                <button (click)="toggleLogout()" mat-menu-item>
+                  <mat-icon fontIcon="exit_to_app"></mat-icon> Đăng xuất
+                </button>
+              </mat-menu>
+            </ng-container>
+            <ng-template #login>
+              <button mat-icon-button [matMenuTriggerFor]="user">
+                <mat-icon
+                  fontIcon="account_circle"></mat-icon>
+              </button>
+              <mat-menu #user="matMenu">
+                <div class="p-3 custom-size">
+                  <a class="user-part" routerLink="/login"> <mat-icon fontIcon="login"></mat-icon>Đăng nhập</a>
+                </div>
+                <div class="px-3 pb-3">
+                  <a class=user-part routerLink="/register"> <mat-icon fontIcon="how_to_reg"></mat-icon>Đăng ký</a>
+                </div>
+              </mat-menu>
+            </ng-template>
+            <button mat-icon-button [matMenuTriggerFor]="wishlist">
+              <mat-icon *ngIf="amountOfWishlistItem > 0; else noWishlistItem"
+                        [matBadge]="amountOfWishlistItem"
+                        matBadgeColor="warn"
+                        fontIcon="favorite">
+              </mat-icon>
+              <ng-template #noWishlistItem>
+                <mat-icon fontIcon="favorite">
+                </mat-icon>
+              </ng-template>
+            </button>
+            <mat-menu #wishlist="matMenu">
+              <div class="" *ngIf="amountOfWishlistItem > 0; else emptyWishlist">
+                <div class="view" *ngFor="let wi of wishlistItems">
+                  <mat-divider></mat-divider>
+                  <div class="py-3">
+                    <div class="d-flex justify-content-between align-items-center font-light mb-2">
+                      <a [routerLink]="['/product', wi.product.slug]">
+                        <img [src]="wi.product.images[0].url" height="90px" width="90px" alt="{{wi.product.name}}">
+                      </a>
+                      <span class="fw-bold">{{wi.product.productDetails[0].price | currencyVND}}</span>
+                    </div>
+                  </div>
+                </div>
+                <mat-divider></mat-divider>
+                <div class="d-grid col-6 float-end py-2 mx-2">
+                  <button routerLink="/wishlist" class="btn btn-success" type="button">
+                    <mat-icon class="align-middle" fontIcon="double_arrow"></mat-icon>
+                  </button>
+                </div>
+              </div>
+              <ng-template #emptyWishlist>
+                <div class="p-3 custom-size text-center">
+                  <span class="material-symbols-outlined fs-16">
+                    sentiment_dissatisfied
+                  </span>
+                  <p class="fs-16">Không có sản phẩm nào trong danh sách yêu thích</p>
+                </div>
+              </ng-template>
+            </mat-menu>
+            <ng-container>
+              <button mat-icon-button [matMenuTriggerFor]="cart">
+                <mat-icon *ngIf="amountOfCartItem > 0; else noItem"
+                          [matBadge]="amountOfCartItem"
+                          matBadgeColor="warn"
+                          fontIcon="shopping_cart">
+                </mat-icon>
+                <ng-template #noItem>
+                  <mat-icon fontIcon="shopping_cart">
+                  </mat-icon>
+                </ng-template>
+              </button>
+              <mat-menu #cart="matMenu">
+                <div *ngIf="amountOfCartItem >0;else emptyCart">
+                  <div class="p-3 custom-size">
+                    <div class="pb-3 d-flex justify-content-between">
+                      <span class="mr-16">{{amountOfCartItem}} sản phẩm</span>
+                      <a  [routerLink]="['/cart']" class="rounded-link cart-link">Giỏ hàng</a>
+                    </div>
+                    <div class="view" *ngFor="let ci of cartItems">
+                      <mat-divider></mat-divider>
+                      <div class="py-3">
+                        <div class="d-flex justify-content-between align-items-center font-light mb-2">
+                          <a [routerLink]="['/product', ci.slug]">
+                            <img [src]="ci.productImage.url" height="60px" width="60px" alt="{{ci.productName}}">
+                          </a>
+                          <span class="font-weight-bold">X {{ci.quantity}}</span>
+                          <span class="fw-bold">{{ci.productDetail.price | currencyVND}}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <mat-divider></mat-divider>
+                  <div class="pt-3 d-flex justify-content-around">
+                    <button class="btn btn-danger btn-circle">
+                      <mat-icon fontIcon="remove_shopping_cart"></mat-icon>
+                    </button>
+                    <button routerLink="/cart" class="btn btn-success btn-circle">
+                      <mat-icon fontIcon="shopping_cart_checkout"></mat-icon>
+                    </button>
+                  </div>
+                </div>
+                <ng-template #emptyCart>
+                  <div class="p-3 custom-size text-center">
+                  <span class="material-symbols-outlined fs-16">
+                    sentiment_dissatisfied
+                  </span>
+                    <p class="fs-16">Không có sản phẩm nào trong giỏ hàng</p>
+                  </div>
+                </ng-template>
+
+              </mat-menu>
+            </ng-container>
+          </div>
+        </div> <!-- col end.// -->
+        <div class="col-lg-4 col-md-12 col-12">
+          <form [formGroup]="form" (ngSubmit)="onSearch()" class="d-flex ml-2" role="search">
+            <div class="search-container">
+              <input
+                matInput
+                formControlName="search"
+                class="form-control me-2"
+                style="width: 100%;"
+                type="text"
+                placeholder="Search"
+                aria-label="Search"
+                #trigger="matAutocompleteTrigger"
+                (keydown.enter)="trigger.closePanel()"
+                [matAutocomplete]="auto">
+              <mat-autocomplete #auto="matAutocomplete">
+                <mat-option *ngFor="let p of filteredProducts | async;" [value]="p.name">{{p.name}}</mat-option>
+              </mat-autocomplete>
+              <button mat-icon-button type="submit" class="search-button">
+                <mat-icon fontIcon="search"></mat-icon>
+              </button>
+            </div>
+          </form>
+        </div> <!-- col end.// -->
+      </div> <!-- row end.// -->
+    </div> <!-- container end.// -->
+  </section> <!-- header-main end.// -->
+  <nav class="p-3 navbar navbar-light bg-light border-top navbar-expand-lg mt-3">
+    <div class="container">
+      <button class="navbar-toggler border" type="button" data-bs-toggle="collapse" data-bs-target="#navbar_main">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbar_main">
+        <div class="navbar-nav">
+          <div class="nav-item dropdown" appDropdownHover>
+            <a class="ps-0 dropdown-toggle nav-link item-content" [routerLink]="'/collection/all'" data-bs-toggle="dropdown">
+              Khám phá
+            </a>
+            <div class="dropdown-menu" style="white-space: nowrap;" >
+              <div class="row">
+                <div class="col-lg">
+                  <span class="ms-3"> Loại </span>
+                  <mat-divider></mat-divider>
+                  <div class="p-3">
+                    <ul style="column-count: 2;">
+                      <li><a [routerLink]="'/collection/instant-coffee'" routerLinkActive="active-link">Cà phê bột</a></li>
+                      <li><a [routerLink]="'/collection/roasted-bean-coffee'" routerLinkActive="active-link">Cà phê hạt đã rang</a></li>
+                      <li><a [routerLink]="'/collection/coffee-ball'" routerLinkActive="active-link">Cà phê hạt nén</a></li>
+                      <li><a [routerLink]="'/collection/bottled-coffee'" routerLinkActive="active-link">Cà phê đóng chai</a></li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="col-lg">
+                  <span class="ms-3"> Nguồn gốc </span>
+                  <mat-divider></mat-divider>
+                  <div class="p-3">
+                    <ul style="column-count: 2;">
+                      <li><a [routerLink]="'/collection/americas-coffee'" routerLinkActive="active-link">Các nước châu Mỹ</a></li>
+                      <li><a [routerLink]="'/collection/africa-coffee'" routerLinkActive="active-link">Các nước châu Phi</a></li>
+                      <li><a [routerLink]="'/collection/asia-coffee'" routerLinkActive="active-link">Các nước châu Á</a></li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="col-lg">
+                  <span class="ms-3"> Nhà cung  cấp </span>
+                  <mat-divider></mat-divider>
+                  <div class="p-3">
+                    <ul style="column-count: 2;">
+                      <li *ngFor="let v of vendors">
+                        <a [routerLink]="''">{{v.name}}</a>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-lg">
+                  <a [routerLink]="'/collection/limited-coffee'" routerLinkActive="active-link" class="dropdown-item" style="cursor: pointer">Cà phê quý hiếm (limited) </a>
+                </div>
+                <div class="col-lg">
+                  <a [routerLink]="'/collection/special-coffee'" routerLinkActive="active-link" class="dropdown-item" style="cursor: pointer">Hộp quà tặng (special box) </a>
+                </div>
+                <div class="col-lg">
+                  <a [routerLink]="'/collection/best-seller'" routerLinkActive="active-link" class="dropdown-item" style="cursor: pointer">Sản phẩm bán chạy</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="nav-item dropdown" appDropdownHover>
+            <a class="dropdown-toggle nav-link item-content" routerLink="/" data-bs-toggle="dropdown">
+              Danh mục
+            </a>
+            <div class="dropdown-menu" style="white-space: nowrap;" >
+              <div class="row">
+                <div class="col-md">
+                  <span class="ms-3"> Loại </span>
+                  <mat-divider></mat-divider>
+                  <div class="p-3">
+                    <ul>
+                      <li><a [routerLink]="'/collection/instant-coffee'" routerLinkActive="active-link">Cà phê bột</a></li>
+                      <li><a [routerLink]="'/collection/roasted-bean-coffee'" routerLinkActive="active-link">Cà phê hạt đã rang</a></li>
+                      <li><a [routerLink]="'/collection/coffee-ball'" routerLinkActive="active-link">Cà phê hạt nén</a></li>
+                      <li><a [routerLink]="'/collection/bottled-coffee'" routerLinkActive="active-link">Cà phê đóng chai</a></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="nav-item dropdown" appDropdownHover>
+            <a class="dropdown-toggle nav-link item-content" routerLink="/" data-bs-toggle="dropdown">
+              NHÀ PHÂN PHỐI
+            </a>
+            <div class="dropdown-menu" style="white-space: nowrap;" >
+              <div class="row">
+                <div class="col-md">
+                  <span class="ms-3"> Tên </span>
+                  <mat-divider></mat-divider>
+                  <div class="p-3">
+                    <ul>
+                      <li *ngFor="let v of vendors">
+                        <a [routerLink]="">{{v.name}}</a>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="nav-item">
+            <a class="nav-link item-content" [routerLink]="'/collection/limited-coffee'" data-bs-toggle="dropdown">
+              CÀ PHÊ QUÝ HIẾM (LIMITED)
+            </a>
+          </div>
+          <div class="nav-item">
+            <a class="nav-link item-content" [routerLink]="'/collection/special-coffee'" data-bs-toggle="dropdown">
+              HỘP QUÀ TẶNG (SPECIAL BOX)
+            </a>
+          </div>
+          <div class="nav-item">
+            <a class="nav-link item-content" [routerLink]="'/contact'" data-bs-toggle="dropdown">
+              LIÊN HỆ
+            </a>
+          </div>
+          <div class="nav-item" >
+            <a class="nav-link item-content" [routerLink]="'/maintenance'" data-bs-toggle="dropdown">
+              GIỚI THIỆU
+            </a>
+          </div>
+        </div> <!-- collapse end.// -->
+      </div> <!-- container end.// -->
+    </div>
+  </nav><!-- navbar end.// -->
+</header> <!-- section-header end.// -->

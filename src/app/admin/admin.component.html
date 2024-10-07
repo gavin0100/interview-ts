@@ -1,0 +1,18 @@
+<mat-drawer-container *ngIf="isAuthenticated;else login" >
+    <mat-drawer mode="side" [opened]="sideNavOpen" >
+        <app-side-nav [isEmployee]="isEmployee"></app-side-nav>
+    </mat-drawer>
+    <mat-drawer-content>
+        <app-header [name]="name"
+                    (onToggleSideNav)="sideNavToggle()"
+                    (onLogout)="logout()"
+        ></app-header>
+<!--        name trong ngoặc vuông là biến của app header, name bth là của component cha (admin.component)-->
+<!--        onLogout hay onToggleSideNav là sự kiện phát ra từ header, và các hàm phía sau của component cha-->
+        <router-outlet></router-outlet>
+    </mat-drawer-content>
+</mat-drawer-container>
+
+<ng-template #login>
+    <router-outlet></router-outlet>
+</ng-template>
